@@ -2,8 +2,11 @@
 #define _MANAGER_H_
 
 #include "GraphMethod.h"
+#include <vector>
+#include <fstream>
+#include <sstream>
 
-class Manager{	
+class Manager{
 private:
 	Graph* graph;	
 	ofstream fout;	
