@@ -47,13 +47,29 @@ void Manager::run(const char* command_txt){
 
 			}
 		}
-		if (cmd.substr(0, 5) == "PRINT")
+		else if (cmd.substr(0, 5) == "PRINT")
 		{
 			success = PRINT();
 		}
-		if (cmd.substr(0, 4) == "EXIT")
+		else if (cmd.substr(0, 3) == "DFS")
+		{
+			char option = cmd.substr(4, 1).c_str()[0];
+			int vertex = stoi(cmd.substr(6));
+			success = mDFS(option,vertex);
+		}
+		else if (cmd.substr(0, 3) == "BFS")
+		{
+			char option = cmd.substr(4, 1).c_str()[0];
+			int vertex = stoi(cmd.substr(6));
+			success = mBFS(option, vertex);
+		}
+		else if (cmd.substr(0, 4) == "EXIT")
 		{
 			break;
+		}
+		else
+		{
+
 		}
 	}
 
@@ -151,12 +167,12 @@ bool Manager::PRINT()
 
 bool Manager::mBFS(char option, int vertex)	
 {
-	return true;
+	return BFS(graph, option, vertex, &fout);
 }
 
 bool Manager::mDFS(char option, int vertex)	
 {
-	return true;
+	return DFS(graph, option, vertex, &fout);
 }
 
 bool Manager::mDIJKSTRA(char option, int vertex)	
