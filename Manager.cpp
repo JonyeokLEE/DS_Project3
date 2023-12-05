@@ -70,6 +70,22 @@ void Manager::run(const char* command_txt){
 			int vertex = stoi(cmd.substr(11));
 			success = mDIJKSTRA(option, vertex);
 		}
+		else if (cmd.substr(0, 7) == "KRUSKAL")
+		{
+			success = mKRUSKAL();
+		}
+		else if (cmd.substr(0, 11) == "BELLMANFORD")
+		{
+			char option = cmd.substr(12,1).c_str()[0];
+			int s_vertex = stoi(cmd.substr(14));
+			int e_vertex = stoi(cmd.substr(16));
+			success = mBELLMANFORD(option, s_vertex, e_vertex);
+		}
+		else if (cmd.substr(0, 5) == "FLOYD")
+		{
+			char option = cmd.substr(6, 1).c_str()[0];
+			success = mFLOYD(option);
+		}
 		else if (cmd.substr(0, 4) == "EXIT")
 		{
 			break;

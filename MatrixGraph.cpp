@@ -20,11 +20,11 @@ MatrixGraph::~MatrixGraph()
 	delete[] m_Mat;
 }
 
-int MatrixGraph::getLength(int from, int to, bool directed)
+int MatrixGraph::getLength(int from, int to, char option)
 {
 	map<int, int> info;
 	bool connected = false;
-	getAdjacentEdges(from, &info, directed);
+	getAdjacentEdges(from, &info, option);
 
 	int length = 0;
 	for (auto itr = info.begin(); itr != info.end(); itr++)
@@ -41,16 +41,17 @@ int MatrixGraph::getLength(int from, int to, bool directed)
 }
 
 
-void MatrixGraph::getAdjacentEdges(int vertex, map<int, int>* m, bool directed)
+void MatrixGraph::getAdjacentEdges(int vertex, map<int, int>* m, char option)
 {	
-	if (directed)
+	if (option == 'Y')
 	{
 		getAdjacentEdgesDirect(vertex, m);
 	}
-	else
+	else if(option=='N')
 	{
 		getAdjacentEdgesUnDirect(vertex, m);
 	}
+	else return;
 }
 
 void MatrixGraph::getAdjacentEdgesDirect(int vertex, map<int, int>* m)
@@ -73,6 +74,17 @@ void MatrixGraph::getAdjacentEdgesUnDirect(int vertex, map<int, int>* m)
 			m->insert(map<int, int>::value_type(i, m_Mat[vertex][i]));
 		}
 	}
+	for (int i = 1; i <= m_Size; i++)
+	{
+		if (m_Mat[i][vertex] != 0)
+		{
+			m->insert(map<int, int>::value_type(i, m_Mat[i][vertex]));
+		}
+	}
+}
+
+void MatrixGraph::getIncomingEdges(int vertex, map<int, int>* m)
+{
 	for (int i = 1; i <= m_Size; i++)
 	{
 		if (m_Mat[i][vertex] != 0)

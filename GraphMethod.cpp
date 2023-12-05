@@ -14,6 +14,7 @@ using namespace std;
 
 bool BFS(Graph* graph, char option, int vertex, ofstream* fout)
 {
+	//인접한 것이 없을 때 처리 필요
 	bool* visited = new bool[graph->getSize() + 1];
 	queue<int>que;
 
@@ -22,12 +23,10 @@ bool BFS(Graph* graph, char option, int vertex, ofstream* fout)
 
 	*fout << "======== BFS ========" << endl;
 
-	bool direct = false;
 	if (option == 'Y' || option == 'N')
 	{
 		if (option == 'Y')
 		{
-			direct = true;
 			*fout << "Directed Graph BFS result" << endl;
 		}
 		else
@@ -50,7 +49,7 @@ bool BFS(Graph* graph, char option, int vertex, ofstream* fout)
 	{
 		current = que.front();
 		que.pop();
-		graph->getAdjacentEdges(current, &relation, direct);
+		graph->getAdjacentEdges(current, &relation, option);
 		for (auto it = relation.begin(); it != relation.end(); it++)
 		{
 			int neighbor = it->first;
@@ -72,6 +71,7 @@ bool BFS(Graph* graph, char option, int vertex, ofstream* fout)
 
 bool DFS(Graph* graph, char option, int vertex, ofstream* fout)
 {
+	//인접한 것이 없을 때 처리 필요
 	bool* visited = new bool[graph->getSize()+1];
 	stack<int>stk;
 
@@ -80,12 +80,10 @@ bool DFS(Graph* graph, char option, int vertex, ofstream* fout)
 
 	*fout << "======== DFS ========" << endl;
 
-	bool direct = false;
 	if (option == 'Y' || option == 'N')
 	{
 		if (option == 'Y')
 		{
-			direct = true;
 			*fout << "Directed Graph DFS result" << endl;
 		}
 		else
@@ -110,7 +108,7 @@ bool DFS(Graph* graph, char option, int vertex, ofstream* fout)
 	{
 		current = stk.top();
 		stk.pop();
-		graph->getAdjacentEdges(current, &relation, direct);
+		graph->getAdjacentEdges(current, &relation, option);
 		for (auto it = relation.begin(); it != relation.end(); it++)
 		{
 			int neighbor = it->first;
@@ -141,17 +139,15 @@ bool Kruskal(Graph* graph)
 bool Dijkstra(Graph* graph, char option, int vertex, ofstream *fout)
 {
 	//음수 예외처리!!
+	//인접한 것이 없을 때 처리 필요
 
-
-	bool direct = false;
-	
 	int* dist = new int[graph->getSize() + 1];
 	bool* shortest = new bool[graph->getSize() + 1];
 	int* prev = new int[graph->getSize() + 1];
 	for (int i = 1; i <= graph->getSize(); i++)
 	{
 		shortest[i] = false;
-		dist[i] = graph->getLength(vertex, i, direct);
+		dist[i] = graph->getLength(vertex, i, option);
 		prev[i] = -1;
 	}
 	shortest[vertex] = true;
@@ -164,7 +160,6 @@ bool Dijkstra(Graph* graph, char option, int vertex, ofstream *fout)
 	{
 		if (option == 'Y')
 		{
-			direct = true;
 			*fout << "Directed Graph Dijkstra result" << endl;
 		}
 		else
@@ -175,7 +170,7 @@ bool Dijkstra(Graph* graph, char option, int vertex, ofstream *fout)
 	else return false;
 
 	map<int, int> relation;
-	graph->getAdjacentEdges(vertex, &relation, direct);
+	graph->getAdjacentEdges(vertex, &relation, option);
 	for (auto itr = relation.begin(); itr != relation.end(); itr++)
 	{
 		prev[itr->first] = vertex;
@@ -201,9 +196,9 @@ bool Dijkstra(Graph* graph, char option, int vertex, ofstream *fout)
 		{
 			if (!shortest[w])
 			{
-				if (dist[u] + graph->getLength(u, w, direct) < dist[w])
+				if (dist[u] + graph->getLength(u, w, option) < dist[w])
 				{
-					dist[w] = dist[u] + graph->getLength(u, w, direct);
+					dist[w] = dist[u] + graph->getLength(u, w, option);
 					prev[w] = u;
 				}
 			}
@@ -242,6 +237,13 @@ bool Dijkstra(Graph* graph, char option, int vertex, ofstream *fout)
 
 bool Bellmanford(Graph* graph, char option, int s_vertex, int e_vertex) 
 {
+	int* dist = new int[graph->getSize() + 1];
+	for (int i = 1; i <= graph->getSize(); i++)
+	{
+		dist[i] = graph->getLength(s_vertex, i, option);
+	}
+
+	delete[] dist;
 	return true;
 }
 

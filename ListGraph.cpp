@@ -14,11 +14,11 @@ ListGraph::~ListGraph()
 	
 }
 
-int ListGraph::getLength(int from, int to, bool directed)
+int ListGraph::getLength(int from, int to, char option)
 {
 	map<int, int> info;
 	bool connected = false;
-	getAdjacentEdges(from, &info, directed);
+	getAdjacentEdges(from, &info, option);
 
 	int length = 0;
 	for (auto itr = info.begin(); itr != info.end(); itr++)
@@ -34,16 +34,17 @@ int ListGraph::getLength(int from, int to, bool directed)
 	return length;
 }
 
-void ListGraph::getAdjacentEdges(int vertex, map<int, int>* m, bool directed)
+void ListGraph::getAdjacentEdges(int vertex, map<int, int>* m, char option)
 {
-	if (directed)
+	if (option == 'Y')
 	{
 		getAdjacentEdgesDirect(vertex, m);
 	}
-	else
+	else if (option == 'N')
 	{
 		getAdjacentEdgesUnDirect(vertex, m);
 	}
+	else return;
 }
 
 void ListGraph::getAdjacentEdgesDirect(int vertex, map<int, int>* m)	//Definition of getAdjacentEdges(Directed graph)
@@ -70,6 +71,20 @@ void ListGraph::getAdjacentEdgesUnDirect(int vertex, map<int, int>* m)
 				{
 					m->insert(map<int, int>::value_type(i, itr->second));
 				}
+			}
+		}
+	}
+}
+
+void ListGraph::getIncomingEdges(int vertex, map<int, int>* m)
+{
+	for (int i = 1; i <= m_Size; i++)
+	{
+		for (auto itr = m_List[i].begin(); itr != m_List[i].end(); itr++)
+		{
+			if (itr->first == vertex)
+			{
+				m->insert(map<int, int>::value_type(i, itr->second));
 			}
 		}
 	}
