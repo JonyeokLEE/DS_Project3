@@ -20,6 +20,27 @@ MatrixGraph::~MatrixGraph()
 	delete[] m_Mat;
 }
 
+int MatrixGraph::getLength(int from, int to, bool directed)
+{
+	map<int, int> info;
+	bool connected = false;
+	getAdjacentEdges(from, &info, directed);
+
+	int length = 0;
+	for (auto itr = info.begin(); itr != info.end(); itr++)
+	{
+		if (to == itr->first)
+		{
+			length = itr->second;
+			connected = true;
+		}
+	}
+	if (!connected) length = 800000000;
+
+	return length;
+}
+
+
 void MatrixGraph::getAdjacentEdges(int vertex, map<int, int>* m, bool directed)
 {	
 	if (directed)

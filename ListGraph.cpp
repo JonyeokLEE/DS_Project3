@@ -14,6 +14,26 @@ ListGraph::~ListGraph()
 	
 }
 
+int ListGraph::getLength(int from, int to, bool directed)
+{
+	map<int, int> info;
+	bool connected = false;
+	getAdjacentEdges(from, &info, directed);
+
+	int length = 0;
+	for (auto itr = info.begin(); itr != info.end(); itr++)
+	{
+		if (to == itr->first)
+		{
+			length = itr->second;
+			connected = true;
+		}
+	}
+	if (!connected) length = 800000000;
+
+	return length;
+}
+
 void ListGraph::getAdjacentEdges(int vertex, map<int, int>* m, bool directed)
 {
 	if (directed)
@@ -28,10 +48,7 @@ void ListGraph::getAdjacentEdges(int vertex, map<int, int>* m, bool directed)
 
 void ListGraph::getAdjacentEdgesDirect(int vertex, map<int, int>* m)	//Definition of getAdjacentEdges(Directed graph)
 {
-	for (auto itr = m_List[vertex].begin(); itr != m_List[vertex].end(); itr++)
-	{
-		m->insert(map<int, int>::value_type(itr->first, itr->second));
-	}
+	m->insert(m_List[vertex].begin(), m_List[vertex].end());
 }
 
 void ListGraph::getAdjacentEdgesUnDirect(int vertex, map<int, int>* m)

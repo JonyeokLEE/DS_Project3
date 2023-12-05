@@ -8,7 +8,8 @@
 Manager::Manager()	
 {
 	graph = nullptr;	
-	fout.open("log.txt", ios::app);
+	fout.open("log.txt");
+	//fout.open("log.txt", ios::app); see you later
 	load = 0;	//Anything is not loaded
 }
 
@@ -62,6 +63,12 @@ void Manager::run(const char* command_txt){
 			char option = cmd.substr(4, 1).c_str()[0];
 			int vertex = stoi(cmd.substr(6));
 			success = mBFS(option, vertex);
+		}
+		else if (cmd.substr(0, 8) == "DIJKSTRA")
+		{
+			char option = cmd.substr(9, 1).c_str()[0];
+			int vertex = stoi(cmd.substr(11));
+			success = mDIJKSTRA(option, vertex);
 		}
 		else if (cmd.substr(0, 4) == "EXIT")
 		{
@@ -177,7 +184,7 @@ bool Manager::mDFS(char option, int vertex)
 
 bool Manager::mDIJKSTRA(char option, int vertex)	
 {
-	return true;
+	return Dijkstra(graph, option, vertex, &fout);
 }
 
 bool Manager::mKRUSKAL()

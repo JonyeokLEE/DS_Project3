@@ -12,6 +12,7 @@ public:
 	ListGraph(bool type, int size);
 	~ListGraph();
 
+	int getLength(int from, int to, bool directed);
 	void getAdjacentEdges(int vertex, map<int, int>* m, bool directed);
 	void getAdjacentEdgesDirect(int vertex, map<int, int>* m);
 	void getAdjacentEdgesUnDirect(int vertex, map<int, int>* m);

@@ -28,6 +28,7 @@ public:
 	bool getType();	
 	int getSize();
 
+	virtual int getLength(int from, int to, bool directed) = 0;
 	virtual void getAdjacentEdges(int vertex, map<int, int>* m, bool directed) = 0;
 	virtual void getAdjacentEdgesDirect(int vertex, map<int, int>* m) = 0;
 	virtual void getAdjacentEdgesUnDirect(int vertex, map<int, int>* m) = 0;
