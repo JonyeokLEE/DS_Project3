@@ -43,14 +43,8 @@ int MatrixGraph::getLength(int from, int to, char option)
 
 void MatrixGraph::getAdjacentEdges(int vertex, map<int, int>* m, char option)
 {	
-	if (option == 'Y')
-	{
-		getAdjacentEdgesDirect(vertex, m);
-	}
-	else if(option=='N')
-	{
-		getAdjacentEdgesUnDirect(vertex, m);
-	}
+	if (option == 'Y') getAdjacentEdgesDirect(vertex, m);
+	else if (option == 'N') getAdjacentEdgesUnDirect(vertex, m);
 	else return;
 }
 

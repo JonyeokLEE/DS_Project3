@@ -235,15 +235,97 @@ bool Dijkstra(Graph* graph, char option, int vertex, ofstream *fout)
 	return true;
 }
 
-bool Bellmanford(Graph* graph, char option, int s_vertex, int e_vertex) 
+bool Bellmanford(Graph* graph, char option, int s_vertex, int e_vertex, ofstream*fout) 
 {
 	int* dist = new int[graph->getSize() + 1];
-	for (int i = 1; i <= graph->getSize(); i++)
+	int* prev = new int[graph->getSize() + 1];
+	for (int i = 0; i <= graph->getSize(); i++)
 	{
 		dist[i] = graph->getLength(s_vertex, i, option);
+		prev[i] = -1;
+	}
+	map<int, int> relation;
+	graph->getAdjacentEdges(s_vertex, &relation, option);
+	for (auto itr = relation.begin(); itr != relation.end(); itr++)
+	{
+		prev[itr->first] = s_vertex;
+	}
+	relation.clear();
+
+
+	for (int k = 2; k <= graph->getSize() - 1; k++)
+	{
+		for (int v = 1; v <= graph->getSize(); v++)
+		{
+			if (option == 'Y') graph->getIncomingEdges(v, &relation);
+			else graph->getAdjacentEdgesUnDirect(v, &relation);
+			if (!relation.empty() && v != s_vertex)
+			{
+				for (int w = 1; w <= graph->getSize(); w++)
+				{
+					if (dist[v] > dist[w] + graph->getLength(w, v, option))
+					{
+						dist[v] = dist[w] + graph->getLength(w, v, option);
+						prev[v] = w;
+					}
+				}
+			}
+			relation.clear();
+		}
+	}
+	*fout << "======== Bellman-Ford ========" << endl;
+	if (option == 'Y' || option == 'N')
+	{
+		if (option == 'Y')
+		{
+			*fout << "Directed Graph Bellman-Ford result" << endl;
+		}
+		else
+		{
+			*fout << "Undirected Graph Bellman-Ford result" << endl;
+		}
+	}
+	for (int v = 1; v <= graph->getSize(); v++)
+	{
+		if (option == 'Y') graph->getIncomingEdges(v, &relation);
+		else graph->getAdjacentEdgesUnDirect(v, &relation);
+		if (!relation.empty() && v != s_vertex)
+		{
+			for (int w = 1; w <= graph->getSize(); w++)
+			{
+				if (dist[v] > dist[w] + graph->getLength(w, v, option))
+				{
+					*fout << "X" << endl;
+					*fout << "=====================" << endl;
+					delete[] dist;
+					delete[] prev;
+					return false;
+				}
+			}
+		}
+		relation.clear();
 	}
 
+	int nprev = 0;
+	stack<int> toPrint;
+	nprev = prev[e_vertex];
+	while (nprev!=-1)
+	{
+		toPrint.push(nprev);
+		nprev = prev[nprev];
+	}
+	while (!toPrint.empty())
+	{
+		nprev = toPrint.top();
+		toPrint.pop();
+		*fout << nprev << " -> ";
+	}
+	if (prev[e_vertex] == -1) *fout << e_vertex << " (X)" << endl;
+	else *fout << e_vertex << " (" << dist[e_vertex] << ")" << endl;
+
+	*fout << "=====================" << endl;
 	delete[] dist;
+	delete[] prev;
 	return true;
 }
 
