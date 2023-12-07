@@ -205,6 +205,7 @@ bool Manager::mDIJKSTRA(char option, int vertex)
 
 bool Manager::mKRUSKAL()
 {
+	Kruskal(graph,&fout);
 	return true;
 }
 

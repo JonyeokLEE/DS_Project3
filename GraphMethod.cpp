@@ -130,10 +130,129 @@ bool DFS(Graph* graph, char option, int vertex, ofstream* fout)
 	return true;
 }
 
-
-bool Kruskal(Graph* graph)
+void InsertionSort(vector<pair<int, pair<int, int>>>& E, int low, int high)
 {
+	for (int j = low+1; j <= high; j++)
+	{
+		int i = j - 1;
+		pair<int, pair<int, int>> key = E[j];
+		while (i > -1)
+		{
+			if (E[i].first <= key.first) break;
+			E[i + 1] = E[i];
+			i--;
+		}
+		E[i + 1] = key;
+	}
+}
 
+void QuickSort(vector<pair<int, pair<int, int>>>& E, int low, int high)
+{
+	if (low < high)
+	{
+		if (high - low + 1 <= 6)
+			InsertionSort(E, low, high);
+		else
+		{
+			int i = low, j = high + 1, pivot = E[low].first;
+			do {
+				do i++; while (E[i].first < pivot);
+				do j--; while (E[j].first > pivot);
+				if (i < j) swap(E[i], E[j]);
+			} while (i < j);
+			swap(E[low], E[j]);
+			QuickSort(E, low, j - 1);
+			QuickSort(E, j + 1, high);
+		}
+	}
+}
+int Find(int* prev, int tofind)
+{
+	if (prev[tofind] == tofind) return tofind;
+	else return Find(prev,prev[tofind]);
+}
+
+void Union(int* prev, int smallone, int bigone)
+{
+	if (smallone < bigone)prev[bigone] = smallone;
+	else prev[smallone] = bigone;
+}
+
+bool isUnion(int* prev, int newone, int oldone)
+{
+	if (Find(prev, newone) == Find(prev,oldone)) return true;
+	else return false;
+}
+
+bool Kruskal(Graph* graph, ofstream* fout)
+{
+	//pair <int WEIGHT, pair<START, END>>
+	vector<pair<int, pair<int, int>>> E;
+	map<int, int> relation;
+	for (int i = 1; i <= graph->getSize(); i++)
+	{
+		graph->getAdjacentEdgesDirect(i, &relation);
+		for (auto itr = relation.begin(); itr != relation.end(); itr++)
+		{
+			E.push_back(make_pair(itr->second, make_pair(i, itr->first)));
+		}
+		relation.clear();
+	}
+	QuickSort(E, 0, E.size()-1);
+	*fout << E.begin()->first << E.rbegin()->first << " " << E.size();
+	int* prev = new int[graph->getSize() + 1];
+	for (int i = 0; i <= graph->getSize(); i++)
+		prev[i] = -1;
+
+	map<int, int>* T = new map<int, int>[graph->getSize() + 1];
+
+	int tt = 0; int ee = 0;
+	pair<int, pair<int, int>> edge;
+
+	int v, w, cost,totalcost=0;
+	while (tt < graph->getSize() - 1 && ee < E.size() + 1)
+	{
+		edge = E[ee]; ee++;
+		v = edge.second.first;
+		w = edge.second.second;
+		cost = edge.first;
+		if (!isUnion(prev, v, w))
+		{
+			Union(prev, Find(prev, v), Find(prev, w));
+			T[v].insert(map<int, int>::value_type(w, cost));
+			tt++;
+		}
+	}
+	if (tt < graph->getSize() - 1||T->empty())
+	{
+		delete[] prev;
+		delete[] T;
+		return false;
+	}
+	for (int i = 1; i <= graph->getSize(); i++)
+	{
+		for (auto itr = T[i].begin(); itr != T[i].end(); itr++)
+		{
+			totalcost += itr->second;
+		}
+	}
+	*fout << "======== Kruskal ========" << endl;
+	for (int i = 1; i <= graph->getSize(); i++)
+	{
+		if (!T[i].empty())
+		{
+			*fout << "[" << i << "]      ";
+			for (auto itr = T[i].begin(); itr != T[i].end(); itr++)
+			{
+				*fout << itr->first << "(" << itr->second << ")";
+			}
+			cout << endl;
+		}
+	}
+	*fout << "cost: " << totalcost << endl;
+	*fout << "=====================" << endl;
+	delete[] prev;
+	delete[] T;
 	return true;
 }
 
