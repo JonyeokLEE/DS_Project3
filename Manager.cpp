@@ -215,7 +215,7 @@ bool Manager::mBELLMANFORD(char option, int s_vertex, int e_vertex)
 
 bool Manager::mFLOYD(char option)
 {
-	return true;
+	return FLOYD(graph, option, &fout);
 }
 
 bool Manager::mKwoonWoon(int vertex)

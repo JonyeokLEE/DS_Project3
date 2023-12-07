@@ -133,6 +133,7 @@ bool DFS(Graph* graph, char option, int vertex, ofstream* fout)
 
 bool Kruskal(Graph* graph)
 {
+
 	return true;
 }
 
@@ -237,6 +238,7 @@ bool Dijkstra(Graph* graph, char option, int vertex, ofstream *fout)
 
 bool Bellmanford(Graph* graph, char option, int s_vertex, int e_vertex, ofstream*fout) 
 {
+	//error code Ãâ·Â
 	int* dist = new int[graph->getSize() + 1];
 	int* prev = new int[graph->getSize() + 1];
 	for (int i = 0; i <= graph->getSize(); i++)
@@ -273,6 +275,24 @@ bool Bellmanford(Graph* graph, char option, int s_vertex, int e_vertex, ofstream
 			relation.clear();
 		}
 	}
+	for (int v = 1; v <= graph->getSize(); v++)
+	{
+		if (option == 'Y') graph->getIncomingEdges(v, &relation);
+		else graph->getAdjacentEdgesUnDirect(v, &relation);
+		if (!relation.empty() && v != s_vertex)
+		{
+			for (int w = 1; w <= graph->getSize(); w++)
+			{
+				if (dist[v] > dist[w] + graph->getLength(w, v, option))
+				{
+					delete[] dist;
+					delete[] prev;
+					return false;
+				}
+			}
+		}
+		relation.clear();
+	}
 	*fout << "======== Bellman-Ford ========" << endl;
 	if (option == 'Y' || option == 'N')
 	{
@@ -285,28 +305,7 @@ bool Bellmanford(Graph* graph, char option, int s_vertex, int e_vertex, ofstream
 			*fout << "Undirected Graph Bellman-Ford result" << endl;
 		}
 	}
-	for (int v = 1; v <= graph->getSize(); v++)
-	{
-		if (option == 'Y') graph->getIncomingEdges(v, &relation);
-		else graph->getAdjacentEdgesUnDirect(v, &relation);
-		if (!relation.empty() && v != s_vertex)
-		{
-			for (int w = 1; w <= graph->getSize(); w++)
-			{
-				if (dist[v] > dist[w] + graph->getLength(w, v, option))
-				{
-					*fout << "X" << endl;
-					*fout << "=====================" << endl;
-					delete[] dist;
-					delete[] prev;
-					return false;
-				}
-			}
-		}
-		relation.clear();
-	}
-
-	int nprev = 0;
+	int nprev = 0; bool exist = false;
 	stack<int> toPrint;
 	nprev = prev[e_vertex];
 	while (nprev!=-1)
@@ -319,8 +318,10 @@ bool Bellmanford(Graph* graph, char option, int s_vertex, int e_vertex, ofstream
 		nprev = toPrint.top();
 		toPrint.pop();
 		*fout << nprev << " -> ";
+		exist = true;
 	}
-	if (prev[e_vertex] == -1) *fout << e_vertex << " (X)" << endl;
+	if (!exist) *fout << "X" << endl;
+	else if (prev[e_vertex] == -1) *fout << e_vertex << " (X)" << endl;
 	else *fout << e_vertex << " (" << dist[e_vertex] << ")" << endl;
 
 	*fout << "=====================" << endl;
@@ -329,8 +330,84 @@ bool Bellmanford(Graph* graph, char option, int s_vertex, int e_vertex, ofstream
 	return true;
 }
 
-bool FLOYD(Graph* graph, char option)
+bool FLOYD(Graph* graph, char option, ofstream* fout)
 {
+	int** A = new int*[graph->getSize() + 1];
+	int i, j, k;
+	for (i = 1; i <= graph->getSize(); i++)
+	{
+		A[i] = new int[graph->getSize() +1];
+	}
+
+	for (i = 1; i <= graph->getSize(); i++)
+	{
+		for (j = 1; j <= graph->getSize(); j++)
+		{
+			A[i][j] = graph->getLength(i, j, option);
+		}
+	}
+
+	for (k = 1; k <= graph->getSize(); k++)
+	{
+		for (i = 1; i <= graph->getSize(); i++)
+		{
+			for (j = 1; j <= graph->getSize(); j++)
+			{
+				if (A[i][k] == 800000000 || A[k][j] == 800000000) continue;
+				else if (A[i][j] > A[i][k] + A[k][j])
+				{
+					A[i][j] = A[i][k] + A[k][j];
+				}
+			}
+		}
+	}
+	for (i = 1; i <= graph->getSize(); i++)
+	{
+		if (A[i][i] < 0)
+		{
+			for (k = 1; k <= graph->getSize(); k++)
+			{
+				delete[] A[k];
+			}
+			delete[] A;
+			return false;
+		}
+	}
+
+	*fout << "======== FLOYD ========" << endl;
+	if (option == 'Y' || option == 'N')
+	{
+		if (option == 'Y')
+		{
+			*fout << "Directed Graph FLOYD result" << endl;
+		}
+		else
+		{
+			*fout << "Undirected Graph FLOYD result" << endl;
+		}
+	}
+	*fout << "  " << setw(4);
+	for (int j = 1; j <= graph->getSize(); j++)
+	{
+		*fout << setw(2) << "[" << j << "]";
+	}*fout << endl;
+	for (int i = 1; i <= graph->getSize(); i++)
+	{
+		*fout << "[" << i << "] ";
+		for (int j = 1; j <= graph->getSize(); j++)
+		{
+			if(A[i][j]== 800000000) *fout << "X" << setw(4);
+			else *fout << A[i][j] << setw(4);
+		}
+		*fout << endl << setw(0);
+	}
+	*fout << "=====================" << endl;
+
+	for (i = 1; i <= graph->getSize(); i++)
+	{
+		delete[] A[i];
+	}
+	delete[] A;
 	return true;
 }
 

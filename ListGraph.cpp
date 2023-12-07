@@ -29,8 +29,9 @@ int ListGraph::getLength(int from, int to, char option)
 			connected = true;
 		}
 	}
+	if (connected) return length;
 	if (!connected) length = 800000000;
-
+	if (!connected && from == to)length = 0;
 	return length;
 }
 
