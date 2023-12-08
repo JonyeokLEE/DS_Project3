@@ -5,13 +5,13 @@
 ListGraph::ListGraph(bool type, int size) : Graph(type, size)
 {
 	m_List = new map<int, int>[size+1];
-	kw_graph = nullptr;
-	
+	kw_graph = new vector<int>[size+1];
 }
 
 ListGraph::~ListGraph()	
 {
-	
+	delete[] m_List;
+	delete[] kw_graph;
 }
 
 int ListGraph::getLength(int from, int to, char option)
@@ -113,5 +113,31 @@ bool ListGraph::printGraph(ofstream *fout)	//Definition of print Graph
 	}
 	*fout << "=====================" << endl;
 	return true;
+}
+
+void ListGraph::getkw_graph(vector<int>* kgraph)
+{
+	for (int i = 1; i <= m_Size; i++)
+	{
+		for (int j = 0; j < kw_graph[i].size(); j++)
+		{
+			kgraph[i].push_back(kw_graph[i][j]);
+		}
+	}
+}
+
+void ListGraph::setkw_graph()
+{
+	map<int, int> relation;
+
+	for (int i = 1; i <= m_Size; i++)
+	{
+		getAdjacentEdgesUnDirect(i, &relation);
+		for (auto itr = relation.begin(); itr != relation.end(); itr++)
+		{
+			kw_graph[i].push_back(itr->first);
+		}
+		sort(kw_graph[i].begin(), kw_graph[i].end());
+	}
 }
 

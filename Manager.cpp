@@ -47,32 +47,38 @@ void Manager::run(const char* command_txt){
 				fout << "=====================" << endl;
 
 			}
+			if (!success) printErrorCode(100);
 		}
 		else if (cmd.substr(0, 5) == "PRINT")
 		{
 			success = PRINT();
+			if (!success) printErrorCode(200);
 		}
 		else if (cmd.substr(0, 3) == "DFS")
 		{
 			char option = cmd.substr(4, 1).c_str()[0];
 			int vertex = stoi(cmd.substr(6));
 			success = mDFS(option,vertex);
+			if (!success) printErrorCode(400);
 		}
 		else if (cmd.substr(0, 3) == "BFS")
 		{
 			char option = cmd.substr(4, 1).c_str()[0];
 			int vertex = stoi(cmd.substr(6));
 			success = mBFS(option, vertex);
+			if (!success) printErrorCode(300);
 		}
 		else if (cmd.substr(0, 8) == "DIJKSTRA")
 		{
 			char option = cmd.substr(9, 1).c_str()[0];
 			int vertex = stoi(cmd.substr(11));
 			success = mDIJKSTRA(option, vertex);
+			if (!success) printErrorCode(700);
 		}
 		else if (cmd.substr(0, 7) == "KRUSKAL")
 		{
 			success = mKRUSKAL();
+			if (!success) printErrorCode(600);
 		}
 		else if (cmd.substr(0, 11) == "BELLMANFORD")
 		{
@@ -80,11 +86,18 @@ void Manager::run(const char* command_txt){
 			int s_vertex = stoi(cmd.substr(14));
 			int e_vertex = stoi(cmd.substr(16));
 			success = mBELLMANFORD(option, s_vertex, e_vertex);
+			if (!success) printErrorCode(800);
 		}
 		else if (cmd.substr(0, 5) == "FLOYD")
 		{
 			char option = cmd.substr(6, 1).c_str()[0];
 			success = mFLOYD(option);
+			if (!success) printErrorCode(900);
+		}
+		else if (cmd.substr(0, 9) == "KWANGWOON")
+		{
+			success = mKwoonWoon(1);
+			if (!success) printErrorCode(900);
 		}
 		else if (cmd.substr(0, 4) == "EXIT")
 		{
@@ -92,7 +105,7 @@ void Manager::run(const char* command_txt){
 		}
 		else
 		{
-
+			if (!success) printErrorCode(1000);
 		}
 	}
 
@@ -205,8 +218,7 @@ bool Manager::mDIJKSTRA(char option, int vertex)
 
 bool Manager::mKRUSKAL()
 {
-	Kruskal(graph,&fout);
-	return true;
+	return Kruskal(graph, &fout);
 }
 
 bool Manager::mBELLMANFORD(char option, int s_vertex, int e_vertex) 
@@ -221,7 +233,7 @@ bool Manager::mFLOYD(char option)
 
 bool Manager::mKwoonWoon(int vertex)
 {
-	return true;
+	return KWANGWOON(graph, 1, &fout);
 }
 
 void Manager::printErrorCode(int n)

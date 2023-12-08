@@ -168,19 +168,21 @@ void QuickSort(vector<pair<int, pair<int, int>>>& E, int low, int high)
 }
 int Find(int* prev, int tofind)
 {
-	if (prev[tofind] == tofind) return tofind;
-	else return Find(prev,prev[tofind]);
+	while (prev[tofind]>=0)
+	{
+		tofind = prev[tofind];
+	}
+	return tofind;
 }
 
-void Union(int* prev, int smallone, int bigone)
+void Union(int* prev, int a, int b)
 {
-	if (smallone < bigone)prev[bigone] = smallone;
-	else prev[smallone] = bigone;
+	prev[a] = b;
 }
 
-bool isUnion(int* prev, int newone, int oldone)
+bool isUnion(int* prev, int a, int b)
 {
-	if (Find(prev, newone) == Find(prev,oldone)) return true;
+	if (Find(prev, a) == Find(prev,b)) return true;
 	else return false;
 }
 
@@ -191,7 +193,7 @@ bool Kruskal(Graph* graph, ofstream* fout)
 	map<int, int> relation;
 	for (int i = 1; i <= graph->getSize(); i++)
 	{
-		graph->getAdjacentEdgesDirect(i, &relation);
+		graph->getAdjacentEdgesUnDirect(i, &relation);
 		for (auto itr = relation.begin(); itr != relation.end(); itr++)
 		{
 			E.push_back(make_pair(itr->second, make_pair(i, itr->first)));
@@ -199,31 +201,31 @@ bool Kruskal(Graph* graph, ofstream* fout)
 		relation.clear();
 	}
 	QuickSort(E, 0, E.size()-1);
-	*fout << E.begin()->first << E.rbegin()->first << " " << E.size();
+
 	int* prev = new int[graph->getSize() + 1];
+
 	for (int i = 0; i <= graph->getSize(); i++)
 		prev[i] = -1;
 
-	map<int, int>* T = new map<int, int>[graph->getSize() + 1];
+	map<int, int>* T = new map<int, int>[E.size()+1];
 
-	int tt = 0; int ee = 0;
-	pair<int, pair<int, int>> edge;
-
+	int tt = 1; int ee = 0;
 	int v, w, cost,totalcost=0;
-	while (tt < graph->getSize() - 1 && ee < E.size() + 1)
+	while (tt <= graph->getSize()-1 && ee < E.size() + 1)
 	{
-		edge = E[ee]; ee++;
-		v = edge.second.first;
-		w = edge.second.second;
-		cost = edge.first;
-		if (!isUnion(prev, v, w))
+		cost = E[ee].first;
+		v = E[ee].second.first;
+		w = E[ee].second.second;
+		if (!isUnion(prev,v,w))
 		{
 			Union(prev, Find(prev, v), Find(prev, w));
 			T[v].insert(map<int, int>::value_type(w, cost));
+			T[w].insert(map<int, int>::value_type(v, cost));
 			tt++;
 		}
+		ee++;
 	}
-	if (tt < graph->getSize() - 1||T->empty())
+	if (tt < graph->getSize() - 1)
 	{
 		delete[] prev;
 		delete[] T;
@@ -236,6 +238,7 @@ bool Kruskal(Graph* graph, ofstream* fout)
 			totalcost += itr->second;
 		}
 	}
+	totalcost /= 2;
 	*fout << "======== Kruskal ========" << endl;
 	for (int i = 1; i <= graph->getSize(); i++)
 	{
@@ -246,7 +249,7 @@ bool Kruskal(Graph* graph, ofstream* fout)
 			{
 				*fout << itr->first << "(" << itr->second << ")";
 			}
-			cout << endl;
+			*fout << endl;
 		}
 	}
 	*fout << "cost: " << totalcost << endl;
@@ -530,6 +533,66 @@ bool FLOYD(Graph* graph, char option, ofstream* fout)
 	return true;
 }
 
-bool KWANGWOON(Graph* graph, int vertex) {
+int init(int node, int start, int end, vector<int>& _arr, vector<int>& _seg)
+{
+	// Start : Arr의 시작 index
+	// end : Arr의 마지막 index
+	// node : segment tree의 노드
+
+	if (start == end) return _seg[node] = _arr[start];
+	int mid = (start + end) / 2;
+	init(node * 2, start, mid, _arr, _seg); // 왼쪽 자식 노드
+	init(node * 2 + 1, mid + 1, end, _arr, _seg); // 오른쪽 자식 노드
+	_seg[node] = _seg[node * 2] + _seg[node * 2 + 1];
+}
+
+void update(int node, int start, int end, int target, int diff_value, vector<int>& _arr, vector<int>& _seg)
+{
+	// 구간 내에 없을 경우
+	if (target < start || target > end) return;
+
+	_seg[node] += diff_value;
+
+	if (start != end) {
+		int mid = (start + end) / 2;
+		update(node * 2, start, mid, target, diff_value, _arr, _seg);
+		update(node * 2 + 1, mid + 1, end, target, diff_value, _arr, _seg);
+	}
+}
+
+int sum(int node, int start, int end, int left, int right, vector<int>& _arr, vector<int>& _seg)
+{
+	// 구간 내에 없을 경우
+	if (left > end || right < start) return 0;
+
+	// 구간 내에 완전히 포함되는 경우
+	if (left <= start && end <= right) return _seg[node];
+
+	// 일부분 겹치는 나머지 경우
+	int mid = (start + end) / 2;
+	return sum(node * 2, start, mid, left, right, _arr, _seg) + sum(node * 2 + 1, mid + 1, end, left, right, _arr, _seg);
+}
+
+bool KWANGWOON(Graph* graph, int vertex, ofstream* fout) {
+
+	graph->setkw_graph();
+	vector<int>* kw_graph = new vector<int>[graph->getSize() + 1];
+	graph->getkw_graph(kw_graph);
+
+	vector<int> segment_tree;
+	segment_tree.resize(kw_graph->size() * 4);
+
+	for (int i = 1; i <= kw_graph->size(); i++)
+	{
+		*fout << "[" << i << "] ";
+		for (int j = 0; j < kw_graph[i].size(); j++)
+		{
+			*fout << kw_graph[i][j] << " ";
+		}
+		*fout << endl;
+	}
+
+
+	delete[] kw_graph;
 	return true;
 }

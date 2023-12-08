@@ -19,7 +19,8 @@ public:
 	void getIncomingEdges(int vertex, map<int, int>* m);
 	void insertEdge(int from, int to, int weight);	
 	bool printGraph(ofstream *fout);
-
+	void getkw_graph(vector<int>* kgraph);
+	void setkw_graph();
 };
 
 #endif
