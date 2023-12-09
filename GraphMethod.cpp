@@ -36,7 +36,7 @@ bool BFS(Graph* graph, char option, int vertex, ofstream* fout)
 	}
 	else return false;
 
-	int flag = 0;
+	bool flag = false;
 	int current = 0; map<int, int> relation;
 
 	que.push(vertex);
@@ -57,8 +57,9 @@ bool BFS(Graph* graph, char option, int vertex, ofstream* fout)
 			{
 				que.push(neighbor);
 				visited[neighbor] = true;
+				if (flag)*fout << " -> ";
 				*fout << neighbor;
-				*fout << " -> ";
+				flag = true;
 			}
 		}
 		relation.clear();
@@ -94,14 +95,14 @@ bool DFS(Graph* graph, char option, int vertex, ofstream* fout)
 	else return false;
 
 
-	int flag = 0;
+	bool flag = false;
 	int current = 0; map<int, int> relation;
 
 	stk.push(vertex);
 	visited[vertex] = true;
 
 	*fout << "startvertex: " << vertex << endl;
-	*fout << vertex; flag++;
+	*fout << vertex;
 	if (flag != graph->getSize()) *fout << " -> ";
 
 	while (!stk.empty())
@@ -117,8 +118,9 @@ bool DFS(Graph* graph, char option, int vertex, ofstream* fout)
 				stk.push(current);
 				stk.push(neighbor);
 				visited[neighbor] = true;
-				*fout << neighbor; flag++;
-				if (flag != graph->getSize()) *fout << " -> ";
+				if(flag)*fout << " -> ";
+				*fout << neighbor;
+				flag = true;
 				break;
 			}
 		}
@@ -156,8 +158,8 @@ void QuickSort(vector<pair<int, pair<int, int>>>& E, int low, int high)
 		{
 			int i = low, j = high + 1, pivot = E[low].first;
 			do {
-				do i++; while (E[i].first < pivot);
-				do j--; while (E[j].first > pivot);
+				do i++; while (E[i].first < pivot&&i<high);
+				do j--; while (E[j].first > pivot&&j>low+1); //다시
 				if (i < j) swap(E[i], E[j]);
 			} while (i < j);
 			swap(E[low], E[j]);
@@ -193,7 +195,7 @@ bool Kruskal(Graph* graph, ofstream* fout)
 	map<int, int> relation;
 	for (int i = 1; i <= graph->getSize(); i++)
 	{
-		graph->getAdjacentEdgesUnDirect(i, &relation);
+		graph->getAdjacentEdgesDirect(i, &relation);
 		for (auto itr = relation.begin(); itr != relation.end(); itr++)
 		{
 			E.push_back(make_pair(itr->second, make_pair(i, itr->first)));
@@ -201,7 +203,6 @@ bool Kruskal(Graph* graph, ofstream* fout)
 		relation.clear();
 	}
 	QuickSort(E, 0, E.size()-1);
-
 	int* prev = new int[graph->getSize() + 1];
 
 	for (int i = 0; i <= graph->getSize(); i++)
@@ -211,7 +212,7 @@ bool Kruskal(Graph* graph, ofstream* fout)
 
 	int tt = 1; int ee = 0;
 	int v, w, cost,totalcost=0;
-	while (tt <= graph->getSize()-1 && ee < E.size() + 1)
+	while (tt <= graph->getSize()-1&& ee < E.size())
 	{
 		cost = E[ee].first;
 		v = E[ee].second.first;
@@ -261,8 +262,20 @@ bool Kruskal(Graph* graph, ofstream* fout)
 
 bool Dijkstra(Graph* graph, char option, int vertex, ofstream *fout)
 {
-	//음수 예외처리!!
-	//인접한 것이 없을 때 처리 필요
+	map<int, int> relation;
+	for (int i = 0; i <= graph->getSize(); i++)
+	{
+		graph->getAdjacentEdges(i, &relation, option);
+		for (auto itr = relation.begin(); itr != relation.end(); itr++)
+		{
+			if (itr->second < 0)
+			{
+				return false;
+			}
+		}
+		relation.clear();
+	}
+	relation.clear();
 
 	int* dist = new int[graph->getSize() + 1];
 	bool* shortest = new bool[graph->getSize() + 1];
@@ -275,7 +288,6 @@ bool Dijkstra(Graph* graph, char option, int vertex, ofstream *fout)
 	}
 	shortest[vertex] = true;
 	dist[vertex] = 0;
-
 	
 
 	*fout << "======== Dijkstra ========" << endl;
@@ -292,7 +304,6 @@ bool Dijkstra(Graph* graph, char option, int vertex, ofstream *fout)
 	}
 	else return false;
 
-	map<int, int> relation;
 	graph->getAdjacentEdges(vertex, &relation, option);
 	for (auto itr = relation.begin(); itr != relation.end(); itr++)
 	{
@@ -333,17 +344,17 @@ bool Dijkstra(Graph* graph, char option, int vertex, ofstream *fout)
 		if (i != vertex)
 		{
 			*fout << "[" << i << "] ";
-			stack<int> toPrint;
+			vector<int> toPrint;
 			nprev = prev[i];
 			while (nprev != -1)
 			{
-				toPrint.push(nprev);
+				toPrint.push_back(nprev);
 				nprev = prev[nprev];
 			}
 			while (!toPrint.empty())
 			{
-				nprev = toPrint.top();
-				toPrint.pop();
+				nprev = toPrint.back();
+				toPrint.pop_back();
 				*fout << nprev << " -> ";
 			}
 			if(prev[i]==-1) *fout << i << " (X)" << endl;
@@ -428,19 +439,23 @@ bool Bellmanford(Graph* graph, char option, int s_vertex, int e_vertex, ofstream
 		}
 	}
 	int nprev = 0; bool exist = false;
-	stack<int> toPrint;
+	vector<int> toPrint;
 	nprev = prev[e_vertex];
 	while (nprev!=-1)
 	{
-		toPrint.push(nprev);
+		toPrint.push_back(nprev);
 		nprev = prev[nprev];
 	}
-	while (!toPrint.empty())
+	if (toPrint.back() != s_vertex) exist = false;
+	else
 	{
-		nprev = toPrint.top();
-		toPrint.pop();
-		*fout << nprev << " -> ";
-		exist = true;
+		while (!toPrint.empty())
+		{
+			nprev = toPrint.back();
+			toPrint.pop_back();
+			*fout << nprev << " -> ";
+			exist = true;
+		}
 	}
 	if (!exist) *fout << "X" << endl;
 	else if (prev[e_vertex] == -1) *fout << e_vertex << " (X)" << endl;
@@ -593,7 +608,7 @@ bool KWANGWOON(Graph* graph, int vertex, ofstream* fout) {
 	{
 		for (int i = 1; i <= kw_graph[i].size(); i++)
 		{
-			update(1, 0, kw_graph[i].size() - 1,diff, kw_graph[i], segment_tree[i]);
+			//update(1, 0, kw_graph[i].size() - 1,diff, kw_graph[i], segment_tree[i]);
 		}
 	}
 

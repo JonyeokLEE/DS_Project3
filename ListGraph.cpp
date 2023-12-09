@@ -26,12 +26,13 @@ int ListGraph::getLength(int from, int to, char option)
 		if (to == itr->first)
 		{
 			length = itr->second;
+			if (from == to && length > 0)length = 0;
 			connected = true;
 		}
 	}
 	if (connected) return length;
 	if (!connected) length = 800000000;
-	if (!connected && from == to)length = 0;
+	else if (!connected && from == to)length = 0;
 	return length;
 }
 

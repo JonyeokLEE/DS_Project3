@@ -31,31 +31,45 @@ void Manager::run(const char* command_txt){
 	}
 	
 	string cmd;
-	bool success;
+	bool success; int parameter = 0;
 	while (!fin.eof())
 	{
 		getline(fin, cmd);
-
+		parameter = 0;
 		if (cmd.substr(0, 4) == "LOAD")
 		{
+			if (cmd.length() > 16)
+			{
+				printErrorCode(100);
+				continue;
+			}
 			string filename = cmd.substr(5);
 			success = LOAD(filename.c_str());
 			if (success)
 			{
 				fout << "======== LOAD ========" << endl;
 				fout << "Success" << endl;
-				fout << "=====================" << endl;
-
+				fout << "=====================" << endl << endl;
 			}
 			if (!success) printErrorCode(100);
 		}
 		else if (cmd.substr(0, 5) == "PRINT")
 		{
+			if (load == 0||cmd.length()>5)
+			{
+				printErrorCode(200);
+				continue;
+			}
 			success = PRINT();
 			if (!success) printErrorCode(200);
 		}
 		else if (cmd.substr(0, 3) == "DFS")
 		{
+			if (load == 0 || cmd.length() > 7||cmd.length()<7)
+			{
+				printErrorCode(400);
+				continue;
+			}
 			char option = cmd.substr(4, 1).c_str()[0];
 			int vertex = stoi(cmd.substr(6));
 			success = mDFS(option,vertex);
@@ -63,6 +77,11 @@ void Manager::run(const char* command_txt){
 		}
 		else if (cmd.substr(0, 3) == "BFS")
 		{
+			if (load == 0 || cmd.length() > 7 || cmd.length() < 7)
+			{
+				printErrorCode(300);
+				continue;
+			}
 			char option = cmd.substr(4, 1).c_str()[0];
 			int vertex = stoi(cmd.substr(6));
 			success = mBFS(option, vertex);
@@ -70,6 +89,11 @@ void Manager::run(const char* command_txt){
 		}
 		else if (cmd.substr(0, 8) == "DIJKSTRA")
 		{
+			if (load == 0 || cmd.length() > 12 || cmd.length() < 12)
+			{
+				printErrorCode(700);
+				continue;
+			}
 			char option = cmd.substr(9, 1).c_str()[0];
 			int vertex = stoi(cmd.substr(11));
 			success = mDIJKSTRA(option, vertex);
@@ -77,11 +101,21 @@ void Manager::run(const char* command_txt){
 		}
 		else if (cmd.substr(0, 7) == "KRUSKAL")
 		{
+			if (load == 0 || cmd.length() > 7 || cmd.length() < 7)
+			{
+				printErrorCode(600);
+				continue;
+			}
 			success = mKRUSKAL();
 			if (!success) printErrorCode(600);
 		}
 		else if (cmd.substr(0, 11) == "BELLMANFORD")
 		{
+			if (load == 0 || cmd.length() > 17 || cmd.length() < 17)
+			{
+				printErrorCode(800);
+				continue;
+			}
 			char option = cmd.substr(12,1).c_str()[0];
 			int s_vertex = stoi(cmd.substr(14));
 			int e_vertex = stoi(cmd.substr(16));
@@ -90,12 +124,22 @@ void Manager::run(const char* command_txt){
 		}
 		else if (cmd.substr(0, 5) == "FLOYD")
 		{
+			if (load == 0 || cmd.length() > 7 || cmd.length() < 7)
+			{
+				printErrorCode(900);
+				continue;
+			}
 			char option = cmd.substr(6, 1).c_str()[0];
 			success = mFLOYD(option);
 			if (!success) printErrorCode(900);
 		}
 		else if (cmd.substr(0, 9) == "KWANGWOON")
 		{
+			if (load == 0 || cmd.length() > 9 || cmd.length() < 9)
+			{
+				printErrorCode(900);
+				continue;
+			}
 			success = mKwoonWoon(1);
 			if (!success) printErrorCode(900);
 		}
@@ -121,9 +165,10 @@ bool Manager::LOAD(const char* filename)
 	if (!readfile) { //If command File cannot be read, Print error
 		return false;
 	}
-
+	if (load == 1) delete graph;
 	if (strcmp(filename,"graph_L.txt")==0)
 	{
+		load = 1;
 		string line;
 		getline(readfile, line);
 		getline(readfile, line);
@@ -158,6 +203,7 @@ bool Manager::LOAD(const char* filename)
 	}
 	else if (strcmp(filename, "graph_M.txt") == 0)
 	{
+		load = 1;
 		string line;
 		getline(readfile, line);
 		getline(readfile, line);

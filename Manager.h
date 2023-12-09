@@ -23,7 +23,7 @@ public:
 	bool mBFS(char option, int vertex);	
 	bool mDFS(char option, int vertex);	
 	bool mDIJKSTRA(char option, int vertex);	
-	bool mKRUSKAL();	
+	bool mKRUSKAL();
 	bool mBELLMANFORD(char option, int s_vertex, int e_vertex);	
 	bool mFLOYD(char option); 
 	bool mKwoonWoon(int vertex);
