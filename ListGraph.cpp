@@ -103,7 +103,7 @@ bool ListGraph::printGraph(ofstream *fout)	//Definition of print Graph
 	*fout << "======== PRINT ========" << endl;
 	for (int i = 1; i <= m_Size; i++)
 	{
-		if (m_List[i].size() == 0) return false;
+		if (m_List[i].size() == 0) continue;
 		*fout << "[" << i << "]";
 		for (auto mi = m_List[i].begin();mi!=m_List[i].end();mi++)
 		{
@@ -112,17 +112,15 @@ bool ListGraph::printGraph(ofstream *fout)	//Definition of print Graph
 		*fout << endl;
 	}
 	*fout << "=====================" << endl;
+	
 	return true;
 }
 
-void ListGraph::getkw_graph(vector<int>* kgraph)
+void ListGraph::getkw_graph(vector<int>& kgraph, int i)
 {
-	for (int i = 1; i <= m_Size; i++)
+	for (int j = 0; j < kw_graph[i].size(); j++)
 	{
-		for (int j = 0; j < kw_graph[i].size(); j++)
-		{
-			kgraph[i].push_back(kw_graph[i][j]);
-		}
+		kgraph.push_back(kw_graph[i][j]);
 	}
 }
 
@@ -138,6 +136,7 @@ void ListGraph::setkw_graph()
 			kw_graph[i].push_back(itr->first);
 		}
 		sort(kw_graph[i].begin(), kw_graph[i].end());
+		relation.clear();
 	}
 }
 

@@ -577,22 +577,29 @@ bool KWANGWOON(Graph* graph, int vertex, ofstream* fout) {
 
 	graph->setkw_graph();
 	vector<int>* kw_graph = new vector<int>[graph->getSize() + 1];
-	graph->getkw_graph(kw_graph);
+	for(int i = 1; i <= graph->getSize(); i++)
+		graph->getkw_graph(kw_graph[i], i);
 
-	vector<int> segment_tree;
-	segment_tree.resize(kw_graph->size() * 4);
-
-	for (int i = 1; i <= kw_graph->size(); i++)
+	vector<int>* segment_tree = new vector<int>[graph->getSize() + 1];
+	for (int i = 1; i <= graph->getSize(); i++)
 	{
-		*fout << "[" << i << "] ";
-		for (int j = 0; j < kw_graph[i].size(); j++)
+		init(1, 0, kw_graph[i].size() - 1, kw_graph[i], segment_tree[i]);
+	}
+	
+	int now = vertex;
+	bool flag = false;
+	int diff = 0;
+	while (!flag)
+	{
+		for (int i = 1; i <= kw_graph[i].size(); i++)
 		{
-			*fout << kw_graph[i][j] << " ";
+			update(1, 0, kw_graph[i].size() - 1,diff, kw_graph[i], segment_tree[i]);
 		}
-		*fout << endl;
 	}
 
 
+
+	delete[] segment_tree;
 	delete[] kw_graph;
 	return true;
 }
