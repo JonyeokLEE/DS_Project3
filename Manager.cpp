@@ -235,7 +235,7 @@ void Manager::run(const char* command_txt){
 		}
 		else
 		{
-			if (!success) printErrorCode(1000);
+			printErrorCode(1000);
 		}
 	}
 
