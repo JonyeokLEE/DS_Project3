@@ -12,14 +12,13 @@ using namespace std;
 
 
 
-bool BFS(Graph* graph, char option, int vertex, ofstream* fout)
+bool BFS(Graph* graph, char option, int vertex, ofstream* fout) //BFS
 {
-	//인접한 것이 없을 때 처리 필요
 	bool* visited = new bool[graph->getSize() + 1];
-	queue<int>que;
+	queue<int>que; //for FIFO way
 
 	for (int i = 0; i < graph->getSize() + 1; i++)
-		visited[i] = false;
+		visited[i] = false; //did i visited here?
 
 	*fout << "======== BFS ========" << endl;
 
@@ -36,16 +35,15 @@ bool BFS(Graph* graph, char option, int vertex, ofstream* fout)
 	}
 	else return false;
 
-	bool flag = false;
-	int current = 0; map<int, int> relation;
+	bool flag = false; bool first = false;
+	int current = 0; map<int, int> relation; //to get adjacency nodes
 
 	que.push(vertex);
 	visited[vertex] = true;
 
-	*fout << "startvertex: " << vertex << endl;
-	*fout << vertex << " -> "; 
-
-	while (!que.empty())
+	*fout << "startvertex: " << vertex << endl; 
+	*fout << vertex;
+	while (!que.empty()) //untill queue is not empty
 	{
 		current = que.front();
 		que.pop();
@@ -55,29 +53,30 @@ bool BFS(Graph* graph, char option, int vertex, ofstream* fout)
 			int neighbor = it->first;
 			if (!visited[neighbor])
 			{
+				if (!first)*fout << " -> ";
 				que.push(neighbor);
 				visited[neighbor] = true;
 				if (flag)*fout << " -> ";
 				*fout << neighbor;
 				flag = true;
+				first = true; //for print form
 			}
 		}
-		relation.clear();
+		relation.clear(); //clear map
 	}
-	*fout << endl << "=====================" << endl;
+	*fout << endl << "=====================" << endl << endl;
 	delete[] visited;
 
 	return true;
 }
 
-bool DFS(Graph* graph, char option, int vertex, ofstream* fout)
+bool DFS(Graph* graph, char option, int vertex, ofstream* fout) //DFS
 {
-	//인접한 것이 없을 때 처리 필요
 	bool* visited = new bool[graph->getSize()+1];
-	stack<int>stk;
+	stack<int>stk; //for LIFO
 
 	for (int i = 0; i < graph->getSize()+1; i++)
-		visited[i] = false;
+		visited[i] = false; //did i visited here?
 
 	*fout << "======== DFS ========" << endl;
 
@@ -95,15 +94,14 @@ bool DFS(Graph* graph, char option, int vertex, ofstream* fout)
 	else return false;
 
 
-	bool flag = false;
-	int current = 0; map<int, int> relation;
+	bool flag = false; bool first = false;
+	int current = 0; map<int, int> relation; //to get adjacency nodes
 
 	stk.push(vertex);
 	visited[vertex] = true;
 
 	*fout << "startvertex: " << vertex << endl;
 	*fout << vertex;
-	if (flag != graph->getSize()) *fout << " -> ";
 
 	while (!stk.empty())
 	{
@@ -115,24 +113,26 @@ bool DFS(Graph* graph, char option, int vertex, ofstream* fout)
 			int neighbor = it->first;
 			if (!visited[neighbor])
 			{
+				if(!first)*fout << " -> ";
 				stk.push(current);
 				stk.push(neighbor);
 				visited[neighbor] = true;
 				if(flag)*fout << " -> ";
 				*fout << neighbor;
 				flag = true;
+				first = true; //for print form
 				break;
 			}
 		}
 		relation.clear();
 	}
-	*fout << endl << "=====================" << endl;
+	*fout << endl << "=====================" << endl << endl;
 	delete[] visited;
 
 	return true;
 }
 
-void InsertionSort(vector<pair<int, pair<int, int>>>& E, int low, int high)
+void InsertionSort(vector<pair<int, pair<int, int>>>& E, int low, int high) //insertion sort
 {
 	for (int j = low+1; j <= high; j++)
 	{
@@ -152,23 +152,23 @@ void QuickSort(vector<pair<int, pair<int, int>>>& E, int low, int high)
 {
 	if (low < high)
 	{
-		if (high - low + 1 <= 6)
+		if (high - low + 1 <= 6) //less than 6 -> run insertion sort
 			InsertionSort(E, low, high);
 		else
 		{
 			int i = low, j = high + 1, pivot = E[low].first;
 			do {
 				do i++; while (E[i].first < pivot&&i<high);
-				do j--; while (E[j].first > pivot&&j>low+1); //다시
+				do j--; while (E[j].first > pivot&&j>low+1);
 				if (i < j) swap(E[i], E[j]);
-			} while (i < j);
+			} while (i < j); //to get Pivot
 			swap(E[low], E[j]);
 			QuickSort(E, low, j - 1);
-			QuickSort(E, j + 1, high);
+			QuickSort(E, j + 1, high); //recursive call
 		}
 	}
 }
-int Find(int* prev, int tofind)
+int Find(int* prev, int tofind) //Find parent
 {
 	while (prev[tofind]>=0)
 	{
@@ -177,32 +177,31 @@ int Find(int* prev, int tofind)
 	return tofind;
 }
 
-void Union(int* prev, int a, int b)
+void Union(int* prev, int a, int b) //Union a and b
 {
 	prev[a] = b;
 }
 
-bool isUnion(int* prev, int a, int b)
+bool isUnion(int* prev, int a, int b) //are they Union?
 {
 	if (Find(prev, a) == Find(prev,b)) return true;
 	else return false;
 }
 
-bool Kruskal(Graph* graph, ofstream* fout)
+bool Kruskal(Graph* graph, ofstream* fout) //KRUSKAL
 {
-	//pair <int WEIGHT, pair<START, END>>
-	vector<pair<int, pair<int, int>>> E;
+	vector<pair<int, pair<int, int>>> E; //first is weight, second.first is start, second.second is end
 	map<int, int> relation;
 	for (int i = 1; i <= graph->getSize(); i++)
 	{
 		graph->getAdjacentEdgesDirect(i, &relation);
 		for (auto itr = relation.begin(); itr != relation.end(); itr++)
 		{
-			E.push_back(make_pair(itr->second, make_pair(i, itr->first)));
+			E.push_back(make_pair(itr->second, make_pair(i, itr->first))); //get all edges to E
 		}
 		relation.clear();
 	}
-	QuickSort(E, 0, E.size()-1);
+	QuickSort(E, 0, E.size()-1); //nondecreasing order
 	int* prev = new int[graph->getSize() + 1];
 
 	for (int i = 0; i <= graph->getSize(); i++)
@@ -217,16 +216,16 @@ bool Kruskal(Graph* graph, ofstream* fout)
 		cost = E[ee].first;
 		v = E[ee].second.first;
 		w = E[ee].second.second;
-		if (!isUnion(prev,v,w))
+		if (!isUnion(prev,v,w)) //if they do not produce cycle
 		{
 			Union(prev, Find(prev, v), Find(prev, w));
 			T[v].insert(map<int, int>::value_type(w, cost));
-			T[w].insert(map<int, int>::value_type(v, cost));
+			T[w].insert(map<int, int>::value_type(v, cost)); //insert both direction
 			tt++;
 		}
 		ee++;
-	}
-	if (tt < graph->getSize() - 1)
+	} 
+	if (tt < graph->getSize() - 1) //fail to get spanning tree
 	{
 		delete[] prev;
 		delete[] T;
@@ -239,7 +238,7 @@ bool Kruskal(Graph* graph, ofstream* fout)
 			totalcost += itr->second;
 		}
 	}
-	totalcost /= 2;
+	totalcost /= 2; //get totalcost
 	*fout << "======== Kruskal ========" << endl;
 	for (int i = 1; i <= graph->getSize(); i++)
 	{
@@ -254,16 +253,16 @@ bool Kruskal(Graph* graph, ofstream* fout)
 		}
 	}
 	*fout << "cost: " << totalcost << endl;
-	*fout << "=====================" << endl;
+	*fout << "=====================" << endl << endl;
 	delete[] prev;
 	delete[] T;
 	return true;
 }
 
-bool Dijkstra(Graph* graph, char option, int vertex, ofstream *fout)
+bool Dijkstra(Graph* graph, char option, int vertex, ofstream *fout) //DIJKSTRA
 {
-	map<int, int> relation;
-	for (int i = 0; i <= graph->getSize(); i++)
+	map<int, int> relation; //to get adgacency nodes
+	for (int i = 1; i <= graph->getSize(); i++)
 	{
 		graph->getAdjacentEdges(i, &relation, option);
 		for (auto itr = relation.begin(); itr != relation.end(); itr++)
@@ -279,7 +278,7 @@ bool Dijkstra(Graph* graph, char option, int vertex, ofstream *fout)
 
 	int* dist = new int[graph->getSize() + 1];
 	bool* shortest = new bool[graph->getSize() + 1];
-	int* prev = new int[graph->getSize() + 1];
+	int* prev = new int[graph->getSize() + 1]; //to save prev nodes
 	for (int i = 1; i <= graph->getSize(); i++)
 	{
 		shortest[i] = false;
@@ -313,7 +312,7 @@ bool Dijkstra(Graph* graph, char option, int vertex, ofstream *fout)
 
 	*fout << "startvertex: " << vertex << endl;
 
-	int u; int uweight=INT32_MAX;
+	int u; int uweight=INT32_MAX; //+infinite number
 	for (int i = 0; i < graph->getSize() - 1; i++)
 	{
 		uweight=INT32_MAX;
@@ -321,11 +320,10 @@ bool Dijkstra(Graph* graph, char option, int vertex, ofstream *fout)
 		{
 			if (uweight > dist[z] && !shortest[z])
 			{
-				u = z; uweight = dist[z];
+				u = z; uweight = dist[z]; //update u
 			}
 		}
-		shortest[u] = true;
-
+		shortest[u] = true; //after getting u, check u is shortest now
 		for (int w = 1; w <= graph->getSize(); w++)
 		{
 			if (!shortest[w])
@@ -335,7 +333,7 @@ bool Dijkstra(Graph* graph, char option, int vertex, ofstream *fout)
 					dist[w] = dist[u] + graph->getLength(u, w, option);
 					prev[w] = u;
 				}
-			}
+			} //update dist w
 		}
 	}
 	int nprev = 0;
@@ -351,18 +349,24 @@ bool Dijkstra(Graph* graph, char option, int vertex, ofstream *fout)
 				toPrint.push_back(nprev);
 				nprev = prev[nprev];
 			}
+			if (toPrint.empty())
+			{
+				*fout << "X" << endl;
+				continue;
+			}
 			while (!toPrint.empty())
 			{
 				nprev = toPrint.back();
 				toPrint.pop_back();
-				*fout << nprev << " -> ";
+				*fout << nprev;
+				*fout<<" -> ";
 			}
 			if(prev[i]==-1) *fout << i << " (X)" << endl;
 			else *fout <<i<< " (" << dist[i] << ")" << endl;
 		}
 	}
 
-	*fout << "=====================" << endl;
+	*fout << "=====================" << endl << endl;
 	delete[] dist;
 	delete[] shortest;
 	delete[] prev;
@@ -371,7 +375,6 @@ bool Dijkstra(Graph* graph, char option, int vertex, ofstream *fout)
 
 bool Bellmanford(Graph* graph, char option, int s_vertex, int e_vertex, ofstream*fout) 
 {
-	//error code 출력
 	int* dist = new int[graph->getSize() + 1];
 	int* prev = new int[graph->getSize() + 1];
 	for (int i = 0; i <= graph->getSize(); i++)
@@ -379,22 +382,22 @@ bool Bellmanford(Graph* graph, char option, int s_vertex, int e_vertex, ofstream
 		dist[i] = graph->getLength(s_vertex, i, option);
 		prev[i] = -1;
 	}
-	map<int, int> relation;
+	map<int, int> relation; //to get adgacency nodes
 	graph->getAdjacentEdges(s_vertex, &relation, option);
 	for (auto itr = relation.begin(); itr != relation.end(); itr++)
 	{
-		prev[itr->first] = s_vertex;
+		prev[itr->first] = s_vertex; //update prev
 	}
 	relation.clear();
 
 
-	for (int k = 2; k <= graph->getSize() - 1; k++)
+	for (int k = 2; k <= graph->getSize() - 1; k++) //k = 2 to n-1
 	{
 		for (int v = 1; v <= graph->getSize(); v++)
 		{
 			if (option == 'Y') graph->getIncomingEdges(v, &relation);
 			else graph->getAdjacentEdgesUnDirect(v, &relation);
-			if (!relation.empty() && v != s_vertex)
+			if (!relation.empty() && v != s_vertex) //if v has at least one incoming edge
 			{
 				for (int w = 1; w <= graph->getSize(); w++)
 				{
@@ -403,16 +406,17 @@ bool Bellmanford(Graph* graph, char option, int s_vertex, int e_vertex, ofstream
 						dist[v] = dist[w] + graph->getLength(w, v, option);
 						prev[v] = w;
 					}
-				}
+				} //update dist[v]
 			}
 			relation.clear();
 		}
 	}
-	for (int v = 1; v <= graph->getSize(); v++)
+
+	for (int v = 1; v <= graph->getSize(); v++) //if update once again-> it has negative cycle
 	{
 		if (option == 'Y') graph->getIncomingEdges(v, &relation);
 		else graph->getAdjacentEdgesUnDirect(v, &relation);
-		if (!relation.empty() && v != s_vertex)
+		if (!relation.empty())
 		{
 			for (int w = 1; w <= graph->getSize(); w++)
 			{
@@ -446,7 +450,8 @@ bool Bellmanford(Graph* graph, char option, int s_vertex, int e_vertex, ofstream
 		toPrint.push_back(nprev);
 		nprev = prev[nprev];
 	}
-	if (toPrint.back() != s_vertex) exist = false;
+	if (toPrint.empty()) exist = false;
+	else if (toPrint.back() != s_vertex) exist = false;
 	else
 	{
 		while (!toPrint.empty())
@@ -459,9 +464,10 @@ bool Bellmanford(Graph* graph, char option, int s_vertex, int e_vertex, ofstream
 	}
 	if (!exist) *fout << "X" << endl;
 	else if (prev[e_vertex] == -1) *fout << e_vertex << " (X)" << endl;
-	else *fout << e_vertex << " (" << dist[e_vertex] << ")" << endl;
+	else *fout << e_vertex << endl;
+	if(exist)*fout<<"cost: " << dist[e_vertex] << endl;
 
-	*fout << "=====================" << endl;
+	*fout << "=====================" << endl << endl;
 	delete[] dist;
 	delete[] prev;
 	return true;
@@ -484,21 +490,21 @@ bool FLOYD(Graph* graph, char option, ofstream* fout)
 		}
 	}
 
-	for (k = 1; k <= graph->getSize(); k++)
+	for (k = 1; k <= graph->getSize(); k++) // k is another edge
 	{
-		for (i = 1; i <= graph->getSize(); i++)
+		for (i = 1; i <= graph->getSize(); i++) //start
 		{
-			for (j = 1; j <= graph->getSize(); j++)
+			for (j = 1; j <= graph->getSize(); j++) //end
 			{
 				if (A[i][k] == 800000000 || A[k][j] == 800000000) continue;
 				else if (A[i][j] > A[i][k] + A[k][j])
 				{
 					A[i][j] = A[i][k] + A[k][j];
-				}
+				} //update i to j
 			}
 		}
 	}
-	for (i = 1; i <= graph->getSize(); i++)
+	for (i = 1; i <= graph->getSize(); i++) //if it has negative weight for itself, it has negative cycle
 	{
 		if (A[i][i] < 0)
 		{
@@ -533,12 +539,13 @@ bool FLOYD(Graph* graph, char option, ofstream* fout)
 		*fout << "[" << i << "] ";
 		for (int j = 1; j <= graph->getSize(); j++)
 		{
-			if(A[i][j]== 800000000) *fout << "X" << setw(4);
+			if (i == j)*fout << "0" << setw(4);
+			else if(A[i][j]== 800000000) *fout << "X" << setw(4);
 			else *fout << A[i][j] << setw(4);
 		}
 		*fout << endl << setw(0);
 	}
-	*fout << "=====================" << endl;
+	*fout << "=====================" << endl << endl;
 
 	for (i = 1; i <= graph->getSize(); i++)
 	{
@@ -548,73 +555,81 @@ bool FLOYD(Graph* graph, char option, ofstream* fout)
 	return true;
 }
 
-int init(int node, int start, int end, vector<int>& _arr, vector<int>& _seg)
+
+bool KWANGWOON(Graph* graph, int vertex, ofstream* fout)
 {
-	// Start : Arr의 시작 index
-	// end : Arr의 마지막 index
-	// node : segment tree의 노드
-
-	if (start == end) return _seg[node] = _arr[start];
-	int mid = (start + end) / 2;
-	init(node * 2, start, mid, _arr, _seg); // 왼쪽 자식 노드
-	init(node * 2 + 1, mid + 1, end, _arr, _seg); // 오른쪽 자식 노드
-	_seg[node] = _seg[node * 2] + _seg[node * 2 + 1];
-}
-
-void update(int node, int start, int end, int target, int diff_value, vector<int>& _arr, vector<int>& _seg)
-{
-	// 구간 내에 없을 경우
-	if (target < start || target > end) return;
-
-	_seg[node] += diff_value;
-
-	if (start != end) {
-		int mid = (start + end) / 2;
-		update(node * 2, start, mid, target, diff_value, _arr, _seg);
-		update(node * 2 + 1, mid + 1, end, target, diff_value, _arr, _seg);
-	}
-}
-
-int sum(int node, int start, int end, int left, int right, vector<int>& _arr, vector<int>& _seg)
-{
-	// 구간 내에 없을 경우
-	if (left > end || right < start) return 0;
-
-	// 구간 내에 완전히 포함되는 경우
-	if (left <= start && end <= right) return _seg[node];
-
-	// 일부분 겹치는 나머지 경우
-	int mid = (start + end) / 2;
-	return sum(node * 2, start, mid, left, right, _arr, _seg) + sum(node * 2 + 1, mid + 1, end, left, right, _arr, _seg);
-}
-
-bool KWANGWOON(Graph* graph, int vertex, ofstream* fout) {
-
-	graph->setkw_graph();
-	vector<int>* kw_graph = new vector<int>[graph->getSize() + 1];
-	for(int i = 1; i <= graph->getSize(); i++)
-		graph->getkw_graph(kw_graph[i], i);
-
-	vector<int>* segment_tree = new vector<int>[graph->getSize() + 1];
-	for (int i = 1; i <= graph->getSize(); i++)
+	map<int, int> relation; //to get adjacency nodes
+	vector<int> neighbor; //to save neighbor
+	bool* visited = new bool[graph->getSize() + 1];
+	for (int i = 0; i <= graph->getSize(); i++)
+		visited[i] = false;
+	int visitednum = 0;
+	int toVisit = 0;
+	int toGo = 0;
+	int current = vertex;
+	queue<int> toPrint; //to print
+	toPrint.push(vertex);
+	while (visitednum < graph->getSize()-1)
 	{
-		init(1, 0, kw_graph[i].size() - 1, kw_graph[i], segment_tree[i]);
-	}
-	
-	int now = vertex;
-	bool flag = false;
-	int diff = 0;
-	while (!flag)
-	{
-		for (int i = 1; i <= kw_graph[i].size(); i++)
+		visited[current] = true;
+		visitednum++;
+		toVisit = 0; toGo = 0;
+		graph->getAdjacentEdgesUnDirect(current, &relation);
+		if (relation.empty()) break; //unconnected -> false
+
+		for (auto it = relation.begin(); it != relation.end(); it++)
 		{
-			//update(1, 0, kw_graph[i].size() - 1,diff, kw_graph[i], segment_tree[i]);
+			if (!visited[it->first])
+			{
+				toVisit++;
+				neighbor.push_back(it->first);
+			}
 		}
+		if (neighbor.empty()) break;
+		if (toVisit % 2 == 0) //Even number case
+		{
+			toVisit = neighbor[0];
+			for (int i=0;i<neighbor.size();i++)
+			{
+				if (!visited[i] && toVisit > neighbor[i]) {
+					toVisit = neighbor[i];
+				}
+			}
+		}
+		else //Odd number case
+		{
+			toVisit = neighbor[0];
+			for (int i = 0; i < neighbor.size(); i++)
+			{
+				if (!visited[i] && toVisit < neighbor[i]) {
+					toVisit = neighbor[i];
+				}
+			}
+		}
+		current = toVisit;
+		toPrint.push(current);
+		relation.clear();
+		neighbor.clear();
 	}
 
+	bool exist = false; bool flag = false; bool first = true;
+	*fout << "======== KWANGWOON ========" << endl;
+	*fout << "startvertex: " << vertex << endl;
+	while (!toPrint.empty())
+	{
+		if (!first)*fout << " -> ";
+		current = toPrint.front();
+		toPrint.pop();
+		if (flag)*fout << " -> ";
+		*fout << current;
+		flag = true;
+		first = true;
+		exist = true;
+	}
+	if (!exist) *fout << "X" << endl;
+	*fout << endl<<"=====================" << endl << endl;
 
+	delete[] visited;
 
-	delete[] segment_tree;
-	delete[] kw_graph;
 	return true;
 }

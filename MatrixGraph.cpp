@@ -22,6 +22,7 @@ MatrixGraph::~MatrixGraph()
 
 int MatrixGraph::getLength(int from, int to, char option)
 {
+	if (from == to) return 0;
 	map<int, int> info;
 	bool connected = false;
 	getAdjacentEdges(from, &info, option);
@@ -36,17 +37,15 @@ int MatrixGraph::getLength(int from, int to, char option)
 			connected = true;
 		}
 	}
-	if (connected) return length;
-	if (!connected) length = 800000000;
-	else if (!connected && from == to)length = 0;
-	return length;
+	if (connected) return length; //return length
+	if (!connected) return 800000000; //disconnect -> return the largest number
 }
 
 
 void MatrixGraph::getAdjacentEdges(int vertex, map<int, int>* m, char option)
 {	
-	if (option == 'Y') getAdjacentEdgesDirect(vertex, m);
-	else if (option == 'N') getAdjacentEdgesUnDirect(vertex, m);
+	if (option == 'Y') getAdjacentEdgesDirect(vertex, m); //direct
+	else if (option == 'N') getAdjacentEdgesUnDirect(vertex, m); //undirect
 	else return;
 }
 
@@ -58,7 +57,7 @@ void MatrixGraph::getAdjacentEdgesDirect(int vertex, map<int, int>* m)
 		{
 			m->insert(map<int, int>::value_type(i, m_Mat[vertex][i]));
 		}
-	}
+	} //get directed edges of vertex
 }
 
 void MatrixGraph::getAdjacentEdgesUnDirect(int vertex, map<int, int>* m)
@@ -76,7 +75,7 @@ void MatrixGraph::getAdjacentEdgesUnDirect(int vertex, map<int, int>* m)
 		{
 			m->insert(map<int, int>::value_type(i, m_Mat[i][vertex]));
 		}
-	}
+	}//get all edges connected with vertex
 }
 
 void MatrixGraph::getIncomingEdges(int vertex, map<int, int>* m)
@@ -87,12 +86,12 @@ void MatrixGraph::getIncomingEdges(int vertex, map<int, int>* m)
 		{
 			m->insert(map<int, int>::value_type(i, m_Mat[i][vertex]));
 		}
-	}
+	} //get incoming edges
 }
 
 void MatrixGraph::insertEdge(int from, int to, int weight)	
 {
-	m_Mat[from][to] = weight;
+	m_Mat[from][to] = weight; //insert
 }
 
 bool MatrixGraph::printGraph(ofstream *fout)	
@@ -113,7 +112,7 @@ bool MatrixGraph::printGraph(ofstream *fout)
 		}
 		*fout << endl<<setw(0);
 	}
-	*fout << "=====================" << endl;
+	*fout << "=====================" << endl << endl;
 	return true;
 }
 

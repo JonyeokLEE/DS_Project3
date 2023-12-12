@@ -11,6 +11,7 @@ private:
 	Graph* graph;	
 	ofstream fout;	
 	int load;
+	bool isList;
 
 public:
 	Manager();	

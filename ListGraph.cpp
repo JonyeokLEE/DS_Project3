@@ -16,6 +16,7 @@ ListGraph::~ListGraph()
 
 int ListGraph::getLength(int from, int to, char option)
 {
+	if (from == to) return 0;
 	map<int, int> info;
 	bool connected = false;
 	getAdjacentEdges(from, &info, option);
@@ -31,18 +32,16 @@ int ListGraph::getLength(int from, int to, char option)
 		}
 	}
 	if (connected) return length;
-	if (!connected) length = 800000000;
-	else if (!connected && from == to)length = 0;
-	return length;
+	if (!connected) return 800000000; //disconnect -> return the largest number
 }
 
 void ListGraph::getAdjacentEdges(int vertex, map<int, int>* m, char option)
 {
-	if (option == 'Y')
+	if (option == 'Y') //direct
 	{
 		getAdjacentEdgesDirect(vertex, m);
 	}
-	else if (option == 'N')
+	else if (option == 'N') //undirect
 	{
 		getAdjacentEdgesUnDirect(vertex, m);
 	}
@@ -51,7 +50,7 @@ void ListGraph::getAdjacentEdges(int vertex, map<int, int>* m, char option)
 
 void ListGraph::getAdjacentEdgesDirect(int vertex, map<int, int>* m)	//Definition of getAdjacentEdges(Directed graph)
 {
-	m->insert(m_List[vertex].begin(), m_List[vertex].end());
+	m->insert(m_List[vertex].begin(), m_List[vertex].end()); //get vertex's adjacency edges
 }
 
 void ListGraph::getAdjacentEdgesUnDirect(int vertex, map<int, int>* m)
@@ -76,6 +75,7 @@ void ListGraph::getAdjacentEdgesUnDirect(int vertex, map<int, int>* m)
 			}
 		}
 	}
+	//get all edges connected with vertex
 }
 
 void ListGraph::getIncomingEdges(int vertex, map<int, int>* m)
@@ -89,7 +89,7 @@ void ListGraph::getIncomingEdges(int vertex, map<int, int>* m)
 				m->insert(map<int, int>::value_type(i, itr->second));
 			}
 		}
-	}
+	} //get incoming edges
 }
 
 void ListGraph::insertEdge(int from, int to, int weight) //Definition of insertEdge
@@ -104,7 +104,6 @@ bool ListGraph::printGraph(ofstream *fout)	//Definition of print Graph
 	*fout << "======== PRINT ========" << endl;
 	for (int i = 1; i <= m_Size; i++)
 	{
-		if (m_List[i].size() == 0) continue;
 		*fout << "[" << i << "]";
 		for (auto mi = m_List[i].begin();mi!=m_List[i].end();mi++)
 		{
@@ -112,7 +111,7 @@ bool ListGraph::printGraph(ofstream *fout)	//Definition of print Graph
 		}
 		*fout << endl;
 	}
-	*fout << "=====================" << endl;
+	*fout << "=====================" << endl << endl;
 	
 	return true;
 }

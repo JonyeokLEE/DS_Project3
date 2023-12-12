@@ -8,9 +8,9 @@
 Manager::Manager()	
 {
 	graph = nullptr;	
-	fout.open("log.txt");
-	//fout.open("log.txt", ios::app); see you later
+	fout.open("log.txt", ios::app);
 	load = 0;	//Anything is not loaded
+	isList = false; //for kw graph
 }
 
 Manager::~Manager()
@@ -36,9 +36,18 @@ void Manager::run(const char* command_txt){
 	{
 		getline(fin, cmd);
 		parameter = 0;
-		if (cmd.substr(0, 4) == "LOAD")
+		if (cmd.substr(0, 4) == "LOAD") //LOAD
 		{
-			if (cmd.length() > 16)
+			vector<string> tosplit;
+			stringstream ss(cmd);
+			string temp;
+
+			while (getline(ss, temp, ' '))
+			{
+				tosplit.push_back(temp);
+			}
+
+			if (tosplit.size() != 2)
 			{
 				printErrorCode(100);
 				continue;
@@ -53,9 +62,18 @@ void Manager::run(const char* command_txt){
 			}
 			if (!success) printErrorCode(100);
 		}
-		else if (cmd.substr(0, 5) == "PRINT")
+		else if (cmd.substr(0, 5) == "PRINT") //PRINT
 		{
-			if (load == 0||cmd.length()>5)
+			vector<string> tosplit;
+			stringstream ss(cmd);
+			string temp;
+
+			while (getline(ss, temp, ' '))
+			{
+				tosplit.push_back(temp);
+			}
+
+			if (load==0||tosplit.size() != 1)
 			{
 				printErrorCode(200);
 				continue;
@@ -63,9 +81,18 @@ void Manager::run(const char* command_txt){
 			success = PRINT();
 			if (!success) printErrorCode(200);
 		}
-		else if (cmd.substr(0, 3) == "DFS")
+		else if (cmd.substr(0, 3) == "DFS") //DFS
 		{
-			if (load == 0 || cmd.length() > 7||cmd.length()<7)
+			vector<string> tosplit;
+			stringstream ss(cmd);
+			string temp;
+
+			while (getline(ss, temp, ' '))
+			{
+				tosplit.push_back(temp);
+			}
+
+			if (load == 0 || tosplit.size() != 3)
 			{
 				printErrorCode(400);
 				continue;
@@ -75,9 +102,18 @@ void Manager::run(const char* command_txt){
 			success = mDFS(option,vertex);
 			if (!success) printErrorCode(400);
 		}
-		else if (cmd.substr(0, 3) == "BFS")
+		else if (cmd.substr(0, 3) == "BFS") //BFS
 		{
-			if (load == 0 || cmd.length() > 7 || cmd.length() < 7)
+			vector<string> tosplit;
+			stringstream ss(cmd);
+			string temp;
+
+			while (getline(ss, temp, ' '))
+			{
+				tosplit.push_back(temp);
+			}
+
+			if (load == 0 || tosplit.size() != 3)
 			{
 				printErrorCode(300);
 				continue;
@@ -87,9 +123,18 @@ void Manager::run(const char* command_txt){
 			success = mBFS(option, vertex);
 			if (!success) printErrorCode(300);
 		}
-		else if (cmd.substr(0, 8) == "DIJKSTRA")
+		else if (cmd.substr(0, 8) == "DIJKSTRA") //DJIKSTRA
 		{
-			if (load == 0 || cmd.length() > 12 || cmd.length() < 12)
+			vector<string> tosplit;
+			stringstream ss(cmd);
+			string temp;
+
+			while (getline(ss, temp, ' '))
+			{
+				tosplit.push_back(temp);
+			}
+
+			if (load == 0 || tosplit.size() != 3)
 			{
 				printErrorCode(700);
 				continue;
@@ -99,9 +144,18 @@ void Manager::run(const char* command_txt){
 			success = mDIJKSTRA(option, vertex);
 			if (!success) printErrorCode(700);
 		}
-		else if (cmd.substr(0, 7) == "KRUSKAL")
+		else if (cmd.substr(0, 7) == "KRUSKAL") //KRUSKAL
 		{
-			if (load == 0 || cmd.length() > 7 || cmd.length() < 7)
+			vector<string> tosplit;
+			stringstream ss(cmd);
+			string temp;
+
+			while (getline(ss, temp, ' '))
+			{
+				tosplit.push_back(temp);
+			}
+
+			if (load == 0 || tosplit.size() != 1)
 			{
 				printErrorCode(600);
 				continue;
@@ -109,9 +163,18 @@ void Manager::run(const char* command_txt){
 			success = mKRUSKAL();
 			if (!success) printErrorCode(600);
 		}
-		else if (cmd.substr(0, 11) == "BELLMANFORD")
+		else if (cmd.substr(0, 11) == "BELLMANFORD") //BELLMANFORD
 		{
-			if (load == 0 || cmd.length() > 17 || cmd.length() < 17)
+			vector<string> tosplit;
+			stringstream ss(cmd);
+			string temp;
+
+			while (getline(ss, temp, ' '))
+			{
+				tosplit.push_back(temp);
+			}
+
+			if (load == 0 || tosplit.size() != 4)
 			{
 				printErrorCode(800);
 				continue;
@@ -122,9 +185,18 @@ void Manager::run(const char* command_txt){
 			success = mBELLMANFORD(option, s_vertex, e_vertex);
 			if (!success) printErrorCode(800);
 		}
-		else if (cmd.substr(0, 5) == "FLOYD")
+		else if (cmd.substr(0, 5) == "FLOYD") //FLOYD
 		{
-			if (load == 0 || cmd.length() > 7 || cmd.length() < 7)
+			vector<string> tosplit;
+			stringstream ss(cmd);
+			string temp;
+
+			while (getline(ss, temp, ' '))
+			{
+				tosplit.push_back(temp);
+			}
+
+			if (load == 0 || tosplit.size() != 2)
 			{
 				printErrorCode(900);
 				continue;
@@ -133,17 +205,31 @@ void Manager::run(const char* command_txt){
 			success = mFLOYD(option);
 			if (!success) printErrorCode(900);
 		}
-		else if (cmd.substr(0, 9) == "KWANGWOON")
+		else if (cmd.substr(0, 9) == "KWANGWOON") //KWANGWOON
 		{
-			if (load == 0 || cmd.length() > 9 || cmd.length() < 9)
+			vector<string> tosplit;
+			stringstream ss(cmd);
+			string temp;
+
+			while (getline(ss, temp, ' '))
 			{
-				printErrorCode(900);
+				tosplit.push_back(temp);
+			}
+
+			if (load == 0 || tosplit.size() != 1)
+			{
+				printErrorCode(500);
+				continue;
+			}
+			if (!isList)
+			{
+				printErrorCode(500);
 				continue;
 			}
 			success = mKwoonWoon(1);
-			if (!success) printErrorCode(900);
+			if (!success) printErrorCode(500);
 		}
-		else if (cmd.substr(0, 4) == "EXIT")
+		else if (cmd.substr(0, 4) == "EXIT") //EXIT
 		{
 			break;
 		}
@@ -157,7 +243,7 @@ void Manager::run(const char* command_txt){
 	return;
 }
 
-bool Manager::LOAD(const char* filename)
+bool Manager::LOAD(const char* filename) //LOAD
 {
 	ifstream readfile;
 	readfile.open(filename, ios_base::in);//File open with read mode
@@ -165,9 +251,10 @@ bool Manager::LOAD(const char* filename)
 	if (!readfile) { //If command File cannot be read, Print error
 		return false;
 	}
-	if (load == 1) delete graph;
-	if (strcmp(filename,"graph_L.txt")==0)
+	if (load == 1) delete graph; //there were graph data before, delete former data
+	if (strcmp(filename,"graph_L.txt")==0) //LIST
 	{
+		isList = true;
 		load = 1;
 		string line;
 		getline(readfile, line);
@@ -194,15 +281,16 @@ bool Manager::LOAD(const char* filename)
 			{
 				to = stoi(tosplit.at(0)); 
 				weight = stoi(tosplit.at(1));
-				graph->insertEdge(from, to, weight);
+				graph->insertEdge(from, to, weight); //split and insert
 			}
 			else
 				return false;
 		}
 		return true;
 	}
-	else if (strcmp(filename, "graph_M.txt") == 0)
+	else if (strcmp(filename, "graph_M.txt") == 0) //MATRIX
 	{
+		isList = false;
 		load = 1;
 		string line;
 		getline(readfile, line);
@@ -227,7 +315,7 @@ bool Manager::LOAD(const char* filename)
 			{
 				for (int i = 1; i <= size; i++)
 				{
-					graph->insertEdge(from, i, stoi(tosplit.at(i - 1)));
+					graph->insertEdge(from, i, stoi(tosplit.at(i - 1))); //split and insert
 				}
 			}
 			else
@@ -237,52 +325,53 @@ bool Manager::LOAD(const char* filename)
 	}
 	else
 	{
+		load = 0;
 		return false;
 	}
 }
 
-bool Manager::PRINT()	
+bool Manager::PRINT() //PRINT
 {
 	if (!fout||!fout.is_open()) return false;
 	return graph->printGraph(&fout);
 }
 
-bool Manager::mBFS(char option, int vertex)	
+bool Manager::mBFS(char option, int vertex)	//BFS
 {
 	return BFS(graph, option, vertex, &fout);
 }
 
-bool Manager::mDFS(char option, int vertex)	
+bool Manager::mDFS(char option, int vertex)	//DFS
 {
 	return DFS(graph, option, vertex, &fout);
 }
 
-bool Manager::mDIJKSTRA(char option, int vertex)	
+bool Manager::mDIJKSTRA(char option, int vertex) //DIJKSTRA
 {
 	return Dijkstra(graph, option, vertex, &fout);
 }
 
-bool Manager::mKRUSKAL()
+bool Manager::mKRUSKAL() //KRUSKAL
 {
 	return Kruskal(graph, &fout);
 }
 
-bool Manager::mBELLMANFORD(char option, int s_vertex, int e_vertex) 
+bool Manager::mBELLMANFORD(char option, int s_vertex, int e_vertex) //BELLMANFORD
 {
 	return Bellmanford(graph, option, s_vertex, e_vertex, &fout);
 }
 
-bool Manager::mFLOYD(char option)
+bool Manager::mFLOYD(char option) //FLOYD
 {
 	return FLOYD(graph, option, &fout);
 }
 
-bool Manager::mKwoonWoon(int vertex)
+bool Manager::mKwoonWoon(int vertex) //KWANGWOON
 {
 	return KWANGWOON(graph, 1, &fout);
 }
 
-void Manager::printErrorCode(int n)
+void Manager::printErrorCode(int n) //to print error code
 {
 	fout<<"========ERROR======="<<endl;
 	fout<<n<<endl;
